@@ -1,0 +1,57 @@
+*main.tf* 
+
+resource "aws_instance" "httpd-instance" {
+  ami             = var.ami_image
+  instance_type   = var.aws_instance
+  security_groups = [aws_security_group.web_sg.name]
+  tags            = var.aws_tags
+}
+
+resource "aws_security_group" "web_sg" {
+  name        = var.web_sg
+  description = var.aws_desc
+  vpc_id      = var.aws_vpc
+  tags        = var.instance_tags
+}
+
+*variable.tf*
+
+variable "ami_image" {
+  type    = string
+  default = "ami-05205cb302b6dca6f"
+}
+
+variable "aws_instance" {
+  type    = string
+  default = "t2.micro"
+}
+
+variable "aws_tags" {
+  type = map(string)
+  default = {
+    "Name" = "httpd-instance"
+  }
+}
+
+variable "web_sg" {
+  type    = string
+  default = "web_sg"
+}
+
+variable "aws_desc" {
+  type    = string
+  default = "allow for sg"
+}
+
+variable "aws_vpc" {
+  type    = string
+  default = "vpc-0ad4768b3ef5540ef"
+}
+
+variable "instance_tags" {
+  type = map(string)
+  default = {
+    name = "allow_tls"
+
+  }
+}
