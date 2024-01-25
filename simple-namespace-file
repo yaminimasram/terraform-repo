@@ -1,0 +1,56 @@
+main.tf
+
+resource "aws_vpc" "main" {
+  cidr_block       = var.cidr_block
+  instance_tenancy = var.instance_tenancy
+  tags = {
+    Name = "${var.namespace}-myvpc"
+  }
+}
+resource "aws_subnet" "main1" {
+  vpc_id                  = aws_vpc.main.id
+  count                   = length(var.public_subnet)
+  cidr_block              = element(var.public_subnet, count.index)
+  map_public_ip_on_launch = true
+  tags = {
+    Name = "${var.namespace}-pub-sub"
+  }
+}
+
+resource "aws_subnet" "main2" {
+  vpc_id                  = aws_vpc.main.id
+  count                   = length(var.private_subnet)
+  cidr_block              = element(var.private_subnet, count.index)
+  map_public_ip_on_launch = true
+  tags = {
+    Name = "${var.namespace}-pri-sub"
+  }
+}
+
+
+vars.tf
+
+variable "cidr_block" {
+  type    = string
+  default = ("10.0.0.0/16")
+}
+
+variable "instance_tenancy" {
+  type    = string
+  default = "default"
+}
+
+variable "namespace" {
+  type    = string
+  default = "Dev"
+}
+
+variable "public_subnet" {
+  type    = list(string)
+  default = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"]
+}
+
+variable "private_subnet" {
+  type    = list(string)
+  default = ["10.0.4.0/24", "10.0.5.0/24"]
+}
